@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.test.dao.OrderListMapper">
+    <resultMap id="BaseResultMap" type="com.example.test.entity.OrderList">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="code" property="code" jdbcType="VARCHAR"/>
+        <result column="song_id" property="songId" jdbcType="INTEGER"/>
+        <result column="user_id" property="userId" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="ispay" property="ispay" jdbcType="TINYINT"/>
+        <result column="ostatus" property="ostatus" jdbcType="TINYINT"/>
+        <result column="url" property="url" jdbcType="VARCHAR"/>
+        <association property="user" javaType="com.example.test.entity.User">
+            <id column="id" property="id" jdbcType="INTEGER"/>
+            <result column="username" property="username" jdbcType="VARCHAR"/>
+        </association>
+        <association property="song" javaType="com.example.test.entity.Song">
+            <id column="id" property="id" jdbcType="INTEGER"/>
+            <result column="name" property="name" jdbcType="VARCHAR"/>
+            <result column="price" property="price" jdbcType="FLOAT"/>
+        </association>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.example.test.entity.OrderList">
+        insert into order_list
+            (id, code, create_time, user_id, song_id, ispay, ostatus)
+        values (#{id}, #{code}, now(), #{userId}, #{songId}, #{ispay}, #{ostatus})
+    </insert>
+
+    <!--    <delete id="delete" parameterType="java.lang.Integer">-->
+    <!--        delete-->
+    <!--        from orderList-->
+    <!--        where id = #{id}-->
+    <!--    </delete>-->
+
+    <select id="allOrder" resultMap="BaseResultMap">
+        select o.id,
+               o.code,
+               u.username,
+               s.name,
+               s.price,
+               o.url,
+               o.create_time,
+               o.ispay,
+               o.ostatus
+        from order_list o
+                 left join user u on o.user_id = u.id
+                 left join song s on o.song_id = s.id
+    </select>
+
+    <select id="orderOfUserId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select o.id,
+               o.code,
+               s.name,
+               s.price,
+               o.url,
+               o.create_time,
+               o.ispay,
+               o.ostatus
+        from order_list o
+                 left join song s on o.song_id = s.id
+        where user_id = #{userId}
+        order by create_time desc
+    </select>
+
+    <update id="update" parameterType="com.example.test.entity.OrderList">
+        update order_list
+        <set>
+            <if test="ispay != null">
+                ispay = #{ispay},
+            </if>
+            <if test="ostatus != null">
+                ostatus = #{ostatus},
+            </if>
+            <if test="url != null">
+                url = #{url},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+
+    <select id="existSongId" resultType="java.lang.Integer">
+        select count(*)
+        from order_list
+        where user_id = #{userId}
+          and song_id = #{songId}
+    </select>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select *
+        from order_list
+        where id = #{id}
+    </select>
+</mapper>

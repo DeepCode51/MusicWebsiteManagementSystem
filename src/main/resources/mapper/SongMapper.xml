@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.test.dao.SongMapper">
+    <resultMap id="BaseResultMap" type="com.example.test.entity.Song">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="singer_id" property="singerId" jdbcType="INTEGER"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="introduction" property="introduction" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="pic" property="pic" jdbcType="VARCHAR"/>
+        <result column="url" property="url" jdbcType="VARCHAR"/>
+        <result column="price" property="price" jdbcType="FLOAT"/>
+        <result column="click_times" property="clickTimes" jdbcType="INTEGER"/>
+        <result column="theme" property="theme" jdbcType="VARCHAR"/>
+    </resultMap>
+    <resultMap id="ResultMapWithBLOBs" type="com.example.test.entity.Song" extends="BaseResultMap">
+        <result column="lyric" property="lyric" jdbcType="LONGVARCHAR"/>
+        <association property="listSong" javaType="com.example.test.entity.ListSong">
+            <id column="song_id" property="songId" jdbcType="INTEGER"/>
+        </association>
+        <association property="collect" javaType="com.example.test.entity.Collect">
+            <id column="song_id" property="songId" jdbcType="INTEGER"/>
+        </association>
+        <association property="comment" javaType="com.example.test.entity.Comment">
+            <id column="id" property="id" javaType="INTEGER"/>
+            <id column="song_id" property="songId" jdbcType="INTEGER"/>
+        </association>
+        <association property="updown" javaType="com.example.test.entity.Updown">
+            <id column="comment_id" property="commentId" jdbcType="INTEGER"/>
+        </association>
+        <association property="orderList" javaType="com.example.test.entity.OrderList">
+            <id column="song_id" property="songId" jdbcType="INTEGER"/>
+        </association>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id
+        , singer_id, name, introduction, create_time, update_time, pic, price,url,click_times,theme
+    </sql>
+    <sql id="Blob_Column_List">
+        id
+        , singer_id, name, introduction, create_time, update_time, pic, price,url,lyric,click_times,theme
+    </sql>
+
+    <insert id="insert" parameterType="com.example.test.entity.Song">
+        insert into song
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="singerId != null">
+                singer_id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="introduction != null">
+                introduction,
+            </if>
+            create_time, update_time,
+            <if test="pic != null">
+                pic,
+            </if>
+            <if test="lyric != null">
+                lyric,
+            </if>
+            <if test="url != null">
+                url,
+            </if>
+            <if test="price != null">
+                price,
+            </if>
+            <if test="theme != null">
+                theme,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id},
+            </if>
+            <if test="singerId != null">
+                #{singerId},
+            </if>
+            <if test="name != null">
+                #{name},
+            </if>
+            <if test="introduction != null">
+                #{introduction},
+            </if>
+            now(),now(),
+            <if test="pic != null">
+                #{pic},
+            </if>
+            <if test="lyric != null">
+                #{lyric},
+            </if>
+            <if test="url != null">
+                #{url},
+            </if>
+            <if test="price != null">
+                #{price},
+            </if>
+            <if test="theme != null">
+                #{theme},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.example.test.entity.Song">
+        update song
+        <set>
+            <if test="id != null">
+                id = #{id},
+            </if>
+            <if test="singerId != null">
+                singer_id = #{singerId},
+            </if>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="introduction != null">
+                introduction = #{introduction},
+            </if>
+            <if test="createTime != null">
+                introduction = #{introduction},
+            </if>
+            update_time = now(),
+            <if test="pic != null">
+                pic = #{pic},
+            </if>
+            <if test="lyric != null">
+                lyric = #{lyric},
+            </if>
+            <if test="url != null">
+                url = #{url},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="theme != null">
+                theme = #{theme},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="updateClick" parameterType="com.example.test.entity.Song">
+        update song
+        <set>
+            <if test="id != null">
+                id = #{id},
+            </if>
+            <if test="clickTimes != null">
+                click_times = #{clickTimes},
+            </if>
+            update_time = now(),
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete
+        from song
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteBySingerId" parameterType="java.lang.Integer">
+        delete
+        song,list_song,comment,updown
+        from song
+            left join list_song on song.id = list_song.song_id
+            left join (comment left join updown on comment.id = updown.comment_id) on song.id = comment.song_id
+            left join collect on song.id = collect.song_id
+        where song.singer_id =
+        #{singerId}
+    </delete>
+
+    <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer">
+        select
+        <include refid="Blob_Column_List"/>
+        from song
+        where id = #{id}
+    </select>
+
+    <select id="allSong" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Blob_Column_List"/>
+        from song
+        order by create_time desc
+    </select>
+    <!--精确查询歌曲-->
+    <select id="songOfName" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String">
+        select
+        <include refid="Blob_Column_List"/>
+        from song
+        where name = #{name}
+    </select>
+    <!--模糊查询歌曲-->
+    <select id="likeSongOfName" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String">
+        select
+        <include refid="Blob_Column_List"/>
+        from song
+        where name like #{name}
+    </select>
+
+    <select id="songOfSingerId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select *
+        from song
+        where singer_id = #{singerId}
+    </select>
+
+    <select id="existSong" resultType="java.lang.Integer">
+        select count(*)
+        from song
+        where name = #{name}
+          and singer_id = #{singerId}
+    </select>
+
+</mapper>

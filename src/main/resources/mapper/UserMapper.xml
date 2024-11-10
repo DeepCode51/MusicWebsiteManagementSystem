@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.test.dao.UserMapper">
+    <resultMap id="BaseResultMap" type="com.example.test.entity.User">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="username" jdbcType="VARCHAR" property="username"/>
+        <result column="password" property="password" jdbcType="VARCHAR"/>
+        <result column="sex" property="sex" jdbcType="TINYINT"/>
+        <result column="phone_num" property="phoneNum" jdbcType="CHAR"/>
+        <result column="email" property="email" jdbcType="CHAR"/>
+        <result column="birth" property="birth" jdbcType="TIMESTAMP"/>
+        <result column="introduction" property="introduction" jdbcType="VARCHAR"/>
+        <result column="location" property="location" jdbcType="VARCHAR"/>
+        <result column="avator" property="avator" jdbcType="VARCHAR"/>
+        <result column="permission" property="permission" jdbcType="TINYINT"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <association property="collect" javaType="com.example.test.entity.Collect">
+            <id column="user_id" property="userId" jdbcType="INTEGER"/>
+        </association>
+        <association property="comment" javaType="com.example.test.entity.Comment">
+            <id column="id" property="id" javaType="INTEGER"/>
+            <id column="user_id" property="userId" jdbcType="INTEGER"/>
+        </association>
+        <association property="updown" javaType="com.example.test.entity.Updown">
+            <id column="user_id" property="userId" jdbcType="INTEGER"/>
+            <id column="comment_id" property="commentId" jdbcType="INTEGER"/>
+        </association>
+        <association property="orderList" javaType="com.example.test.entity.OrderList">
+            <id column="user_id" property="userId" jdbcType="INTEGER"/>
+        </association>
+        <association property="ranks" javaType="com.example.test.entity.Ranks">
+            <id column="user_id" property="userId" jdbcType="INTEGER"/>
+        </association>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id
+        , username, password, sex, phone_num, email, birth, introduction, location, avator, create_time, update_time,permission
+    </sql>
+
+    <insert id="insert" parameterType="com.example.test.entity.User">
+        insert into user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="username != null">
+                username,
+            </if>
+            <if test="password != null">
+                password,
+            </if>
+            <if test="sex != null">
+                sex,
+            </if>
+            <if test="phoneNum != null">
+                phone_num,
+            </if>
+            <if test="email != null">
+                email,
+            </if>
+            <if test="birth != null">
+                birth,
+            </if>
+            <if test="introduction != null">
+                introduction,
+            </if>
+            <if test="location != null">
+                location,
+            </if>
+            <if test="avator != null">
+                avator,
+            </if>
+            create_time, update_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id},
+            </if>
+            <if test="username != null">
+                #{username},
+            </if>
+            <if test="password != null">
+                #{password},
+            </if>
+            <if test="sex != null">
+                #{sex},
+            </if>
+            <if test="phoneNum != null">
+                #{phoneNum},
+            </if>
+            <if test="email != null">
+                #{email},
+            </if>
+            <if test="birth != null">
+                #{birth},
+            </if>
+            <if test="introduction != null">
+                #{introduction},
+            </if>
+            <if test="location != null">
+                #{location},
+            </if>
+            <if test="avator != null">
+                #{avator},
+            </if>
+            now(),now(),
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.example.test.entity.User">
+        update user
+        <set>
+            <if test="password != null">
+                password=#{password},
+            </if>
+            <if test="sex != null">
+                sex= #{sex},
+            </if>
+            <if test="phoneNum != null">
+                phone_num=#{phoneNum},
+            </if>
+            <if test="email != null">
+                email=#{email},
+            </if>
+            <if test="birth != null">
+                birth= #{birth},
+            </if>
+            <if test="avator != null">
+                avator= #{avator},
+            </if>
+            <if test="introduction != null">
+                introduction=#{introduction},
+            </if>
+            <if test="location != null">
+                location=#{location},
+            </if>
+            <if test="permission != null">
+                permission=#{permission},
+            </if>
+            update_time=now(),
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete
+        from user
+        where id = #{id}
+    </delete>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from user
+        where id = #{id}
+    </select>
+
+    <select id="allUser" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user
+        order by create_time desc
+    </select>
+
+    <select id="verifyPassword" resultType="java.lang.Integer" parameterType="java.util.HashMap">
+        SELECT count(*)
+        FROM user
+        where username = #{0}
+          and password = #{1}
+    </select>
+
+    <select id="getByUsername" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from user
+        where username = #{username}
+    </select>
+
+</mapper>

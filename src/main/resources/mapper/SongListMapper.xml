@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.test.dao.SongListMapper">
+    <resultMap id="BaseResultMap" type="com.example.test.entity.SongList">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="pic" property="pic" jdbcType="VARCHAR"/>
+        <result column="style" property="style" jdbcType="VARCHAR"/>
+        <association property="listSong" javaType="com.example.test.entity.ListSong">
+            <id column="song_list_id" property="songListId" jdbcType="INTEGER"/>
+        </association>
+        <association property="comment" javaType="com.example.test.entity.Comment">
+            <id column="id" property="id" javaType="INTEGER"/>
+            <id column="song_list_id" property="songListId" jdbcType="INTEGER"/>
+        </association>
+        <association property="updown" javaType="com.example.test.entity.Updown">
+            <id column="comment_id" property="commentId" jdbcType="INTEGER"/>
+        </association>
+        <association property="ranks" javaType="com.example.test.entity.Ranks">
+            <id column="song_list_id" property="songListId" jdbcType="INTEGER"/>
+        </association>
+    </resultMap>
+    <resultMap id="ResultMapWithBLOBs" type="com.example.test.entity.SongList" extends="BaseResultMap">
+        <result column="introduction" property="introduction" jdbcType="LONGVARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id
+        , title, pic, style
+    </sql>
+    <sql id="Blob_Column_List">
+        id
+        , title, pic, style,introduction
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from song_list
+        where id = #{id}
+    </select>
+
+    <select id="allSongList" resultMap="ResultMapWithBLOBs">
+        select *
+        from song_list
+        order by id desc
+    </select>
+
+    <select id="likeTitle" resultMap="ResultMapWithBLOBs">
+        select *
+        from song_list
+        where title like #{title}
+    </select>
+    <select id="likeStyle" resultMap="ResultMapWithBLOBs">
+        select *
+        from song_list
+        where style like #{style}
+    </select>
+    <select id="songListOfTitle" resultMap="ResultMapWithBLOBs">
+        select *
+        from song_list
+        where title = #{title}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete
+        song_list,list_song,comment,updown
+        from song_list
+            left join list_song on song_list.id = list_song.song_list_id
+            left join (comment left join updown on comment.id = updown.comment_id) on song_list.id = comment.song_list_id
+            left join ranks on song_list.id = ranks.song_list_id
+        where song_list.id =
+        #{id}
+    </delete>
+
+    <insert id="insert" parameterType="com.example.test.entity.SongList">
+        insert into song_list
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="title != null">
+                title,
+            </if>
+            <if test="pic != null">
+                pic,
+            </if>
+            <if test="style != null">
+                style,
+            </if>
+            <if test="introduction != null">
+                introduction,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id},
+            </if>
+            <if test="title != null">
+                #{title},
+            </if>
+            <if test="pic != null">
+                #{pic},
+            </if>
+            <if test="style != null">
+                #{style},
+            </if>
+            <if test="introduction != null">
+                #{introduction},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.example.test.entity.SongList">
+        update song_list
+        <set>
+            <if test="title != null">
+                title = #{title},
+            </if>
+            <if test="pic != null">
+                pic = #{pic},
+            </if>
+            <if test="style != null">
+                style = #{style},
+            </if>
+            <if test="introduction != null">
+                introduction = #{introduction},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.example.test.entity.SongList">
+        update song_list
+        set title = #{title},
+            pic   = #{pic},
+            style = #{style}
+        where id = #{id}
+    </update>
+
+    <select id="existSongList" resultType="java.lang.Integer" parameterType="java.lang.String">
+        select count(*)
+        from song_list
+        where title = #{title}
+    </select>
+</mapper>

@@ -1,0 +1,107 @@
+@import "var.scss";
+@import "global.scss";
+
+/*评论*/
+.comment {
+  h2 {
+    margin-bottom: 20px;
+    text-align: center;
+    height: 50px;
+    line-height: 50px;
+    border-bottom: 1px solid $color-black;
+  }
+
+  .comment-msg {
+    display: flex;
+
+    .comment-img {
+      width: 70px;
+
+      img {
+        width: 100%;
+      }
+    }
+
+    .comment-input {
+      margin-left: 10px;
+      flex: 1;
+    }
+  }
+
+  .sub-btn {
+    margin-top: 10px;
+    margin-left: 90%;
+  }
+}
+
+/*热门评论*/
+.popular {
+  width: 100%;
+
+  >li {
+    border-bottom: solid 1px rgba(0, 0, 0, 0.1);
+    padding: 15px 0;
+    display: flex;
+
+    .popular-img {
+      width: 50px;
+
+      img {
+        width: 100%;
+      }
+    }
+
+    .popular-msg {
+      padding: 0 20px;
+      flex: 1;
+
+      li {
+        width: 100%;
+      }
+
+      .time {
+        font-size: 0.6rem;
+        color: rgba(0, 0, 0, 0.5);
+      }
+
+      .content {
+        font-size: 1rem;
+      }
+    }
+
+    .operation {
+      width: 100px;
+      display: flex;
+      line-height: 60px;
+
+      .down {
+        margin-right: 30px;
+      }
+    }
+  }
+}
+
+.icon {
+  @include icon(1em);
+}
+
+.icon-jinzhi {
+  @include icon(1em);
+  margin-top: 21px;
+  transform: rotate(180deg);
+}
+
+// .comment-nav {
+//   font-size: 18px;
+//   color: $color-black;
+
+//   span {
+//     line-height: 50px;
+//     cursor: pointer;
+//   }
+// }
+
+// .isActive {
+//   font-weight: 600;
+//   color: $color-orange;
+// }

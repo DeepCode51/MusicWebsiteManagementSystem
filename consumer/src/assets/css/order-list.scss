@@ -1,0 +1,21 @@
+@import "var.scss";
+@import "global.scss";
+
+.orders {
+    background-color: $color-white;
+    border-radius: $border-radius-songlist;
+    margin: 30px 150px;
+    margin-top: $header-height + 20px;
+    padding: 50px 40px;
+    min-width: 700px;
+
+    .title {
+        text-align: center;
+    }
+
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+    }
+}

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.test.dao.UpdownMapper">
+    <resultMap id="BaseResultMap" type="com.example.test.entity.Updown">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="user_id" property="userId" jdbcType="INTEGER"/>
+        <result column="comment_id" property="commentId" jdbcType="INTEGER"/>
+        <result column="option_type" property="optionType" jdbcType="TINYINT"/>
+        <result column="reason" jdbcType="VARCHAR" property="reason"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.example.test.entity.Updown">
+        insert into updown
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="commentId != null">
+                comment_id,
+            </if>
+            <if test="optionType != null">
+                option_type,
+            </if>
+            <if test="reason != null">
+                reason,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id},
+            </if>
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="commentId != null">
+                #{commentId},
+            </if>
+            <if test="optionType != null">
+                #{optionType},
+            </if>
+            <if test="reason != null">
+                #{reason},
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="delete" >
+        delete
+        from updown
+        where comment_id = #{commentId} and user_id = #{userId} and option_type = #{optionType}
+    </delete>
+
+    <delete id="deleteById" >
+        delete
+        from updown
+        where id = #{id}
+    </delete>
+
+    <select id="updownOfCommentId" resultMap="BaseResultMap">
+        select *
+        from updown
+        where comment_id = #{0} and option_type = #{1}
+    </select>
+
+    <select id="existUpdown" resultType="java.lang.Integer">
+        select count(*)
+        from updown
+        where comment_id = #{commentId} and user_id = #{userId} and option_type = #{optionType}
+    </select>
+
+    <select id="updownNum" resultType="java.lang.Integer">
+        select count(*)
+        from updown
+        where comment_id = #{commentId} and option_type = #{optionType}
+    </select>
+
+    <select id="updownOfUserId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select *
+        from updown
+        where user_id = #{userId}
+    </select>
+</mapper>

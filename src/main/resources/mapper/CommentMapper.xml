@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.test.dao.CommentMapper">
+    <resultMap id="BaseResultMap" type="com.example.test.entity.Comment">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="song_id" property="songId" jdbcType="INTEGER"/>
+        <result column="user_id" property="userId" jdbcType="INTEGER"/>
+        <result column="song_list_id" property="songListId" jdbcType="INTEGER"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="type" property="type" jdbcType="TINYINT"/>
+        <result column="isshow" property="isshow" jdbcType="TINYINT"/>
+        <result column="up" property="up" jdbcType="INTEGER"/>
+        <result column="down" property="down" jdbcType="INTEGER"/>
+        <association property="updown" javaType="com.example.test.entity.Updown">
+            <id column="comment_id" property="commentId" jdbcType="INTEGER"/>
+        </association>
+        <association property="user" javaType="com.example.test.entity.User">
+            <id column="id" property="id" jdbcType="INTEGER"/>
+            <id column="username" property="username" jdbcType="VARCHAR"/>
+        </association>
+        <association property="song" javaType="com.example.test.entity.Song">
+            <id column="id" property="id" jdbcType="INTEGER"/>
+            <id column="name" property="name" jdbcType="VARCHAR"/>
+        </association>
+        <association property="songList" javaType="com.example.test.entity.SongList">
+            <id column="id" property="id" jdbcType="INTEGER"/>
+            <id column="title" property="title" jdbcType="VARCHAR"/>
+        </association>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id
+        ,song_id,user_id,song_list_id,content,create_time,type,up,down,isshow
+    </sql>
+
+    <insert id="insert" parameterType="com.example.test.entity.Comment">
+        insert into comment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="songId != null">
+                song_id,
+            </if>
+            <if test="songListId != null">
+                song_list_id,
+            </if>
+            <if test="content != null">
+                content,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="up != null">
+                up,
+            </if>
+            create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id},
+            </if>
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="songId != null">
+                #{songId},
+            </if>
+            <if test="songListId != null">
+                #{songListId},
+            </if>
+            <if test="content != null">
+                #{content},
+            </if>
+            <if test="type != null">
+                #{type},
+            </if>
+            <if test="up != null">
+                #{up},
+            </if>
+            now(),
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.example.test.entity.Comment">
+        update comment
+        <set>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="songId != null">
+                song_id = #{songId},
+            </if>
+            <if test="songListId != null">
+                song_list_id = #{songListId},
+            </if>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="up != null">
+                up = #{up},
+            </if>
+            <if test="down != null">
+                down = #{down},
+            </if>
+            <if test="isshow != null">
+                isshow = #{isshow},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete
+        from comment
+        where id = #{id}
+    </delete>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from comment
+        where id = #{id}
+    </select>
+
+    <select id="allComment" resultMap="BaseResultMap">
+        select c.*, u.username, s.name, l.title
+        from comment c
+                 left join user u on c.user_id = u.id
+                 left join song s on c.song_id = s.id
+                 left join song_list l on c.song_list_id = l.id
+        order by c.create_time desc
+    </select>
+
+    <select id="commentOfSongId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from comment
+        where song_id = #{songId} and isshow != 0
+--         order by create_time desc
+    </select>
+
+    <select id="commentOfSongListId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from comment
+        where song_list_id = #{songListId} and isshow != 0
+--         order by create_time desc
+    </select>
+</mapper>
